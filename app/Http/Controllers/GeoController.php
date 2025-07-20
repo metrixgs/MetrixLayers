@@ -1,8 +1,10 @@
 <?php
- namespace App\Http\Controllers;
+
+namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class GeoController extends Controller
 {
@@ -24,10 +26,30 @@ class GeoController extends Controller
             $query->select('*')->addSelect(DB::raw('NULL as geom_geojson'));
         }
 
-        return response()->json($query->get());
+        // Ordenamiento (opcional)
+        if ($request->has('sort_by')) {
+            $direction = $request->get('order', 'asc');
+            $query->orderBy($request->get('sort_by'), $direction);
+        }
+
+        // Paginación
+        $page = (int) $request->get('page', 1);
+        $perPage = (int) $request->get('per_page', 25);
+
+        $total = $query->count();
+        $results = $query->forPage($page, $perPage)->get();
+
+        return response()->json([
+            'data' => $results,
+            'pagination' => [
+                'total' => $total,
+                'per_page' => $perPage,
+                'current_page' => $page,
+                'last_page' => ceil($total / $perPage),
+            ]
+        ]);
     }
 
-    // Métodos por tabla
     public function getPaises(Request $request)       { return $this->getFromTable($request, 'pais'); }
     public function getEstados(Request $request)      { return $this->getFromTable($request, 'estados'); }
     public function getDelegaciones(Request $request) { return $this->getFromTable($request, 'delegaciones'); }
