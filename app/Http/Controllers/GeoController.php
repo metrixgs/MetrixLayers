@@ -7,48 +7,66 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class GeoController extends Controller
+{  public function getFromTable(Request $request, string $table)
 {
-    public function getFromTable(Request $request, string $table)
-    {
-        $query = DB::table($table);
+    $query = DB::table($table);
 
-        // Filtrar por campos level_#
-        foreach ($request->all() as $key => $value) {
-            if (str_starts_with($key, 'level_')) {
-                $query->where($key, $value);
+    // Mapas de filtros por tabla
+    $filters = [
+        'pais' => [],
+        'estados' => ['level_1' => 'cve_pais'],
+        'municipios' => ['level_1' => 'cve_ent'],
+        'delegaciones' => ['level_1' => 'cu_mun'],
+        'colonias' => ['level_1' => 'cu_mun'],
+        'cod_postal' => ['level_1' => 'cu_mun'],
+        'manzanas' => ['level_1' => 'cu_mun'],
+    ];
+
+    // Aplica filtros si existen para la tabla
+    if (isset($filters[$table])) {
+        foreach ($filters[$table] as $level => $column) {
+            if ($request->has($level)) {
+                $query->where($column, $request->get($level));
             }
         }
-
-        // Si with_geom=true, incluir campo geom como GeoJSON
-        if ($request->boolean('with_geom')) {
-            $query->select('*', DB::raw('ST_AsGeoJSON(geom)::json AS geom_geojson'));
-        } else {
-            $query->select('*')->addSelect(DB::raw('NULL as geom_geojson'));
-        }
-
-        // Ordenamiento (opcional)
-        if ($request->has('sort_by')) {
-            $direction = $request->get('order', 'asc');
-            $query->orderBy($request->get('sort_by'), $direction);
-        }
-
-        // Paginación
-        $page = (int) $request->get('page', 1);
-        $perPage = (int) $request->get('per_page', 25);
-
-        $total = $query->count();
-        $results = $query->forPage($page, $perPage)->get();
-
-        return response()->json([
-            'data' => $results,
-            'pagination' => [
-                'total' => $total,
-                'per_page' => $perPage,
-                'current_page' => $page,
-                'last_page' => ceil($total / $perPage),
-            ]
-        ]);
     }
+
+    // Convertir columna geom a GeoJSON
+    $query->select(array_merge(
+        array_filter(DB::getSchemaBuilder()->getColumnListing($table), fn($col) => $col !== 'geom'),
+        [DB::raw('ST_AsGeoJSON(geom)::json AS geom')]
+    ));
+
+    // Ordenar (opcional)
+    if ($request->has('sort_by')) {
+        $direction = $request->get('order', 'asc');
+        $query->orderBy($request->get('sort_by'), $direction);
+    }
+
+    // Paginación (opcional)
+    $page = (int) $request->get('page', 1);
+    $perPage = (int) $request->get('per_page', 1000); // puedes ajustar esto según el tamaño esperado
+    $results = $query->forPage($page, $perPage)->get();
+
+    // Construir FeatureCollection
+    $features = $results->map(function ($row) {
+        $props = (array) $row;
+        $geometry = $props['geom'];
+        unset($props['geom']);
+
+        return [
+            'type' => 'Feature',
+            'geometry' => $geometry,
+            'properties' => $props,
+        ];
+    });
+
+    return response()->json([
+        'type' => 'FeatureCollection',
+        'features' => $features,
+    ]);
+}
+
 
     public function getPaises(Request $request)       { return $this->getFromTable($request, 'pais'); }
     public function getEstados(Request $request)      { return $this->getFromTable($request, 'estados'); }
