@@ -23,3 +23,4 @@ Route::get('/manzanas', [GeoController::class, 'getManzanas']);
 Route::get('/colonias', [GeoController::class, 'getColonias']);
 Route::get('/cod_postal', [GeoController::class, 'getCodPostal']);
 Route::get('/predios', [GeoController::class, 'getPredios']);
+Route::get('/geo/{table}/{id}', [GeoController::class, 'getById']);

@@ -88,4 +88,71 @@ class GeoController extends Controller
     public function getManzanas(Request $request)     { return $this->getFromTable($request, 'manzanas'); }
     public function getCodPostal(Request $request)    { return $this->getFromTable($request, 'cod_postal'); }
     public function getPredios(Request $request)      { return $this->getFromTable($request, 'predios'); } // AGREGADO
+
+
+       public function filtrosJerarquicos(Request $request)
+    {
+        // Si no hay ningún parámetro, devolvemos todos los países
+        if (!$request->has('pais_id')) {
+            return response()->json([
+                'paises' => Pais::all(['id', 'nombre'])
+            ]);
+        }
+
+        // Si viene pais_id, devolvemos estados de ese país
+        if ($request->has('pais_id') && !$request->has('estado_id')) {
+            $estados = Pais::findOrFail($request->pais_id)->estados()->get(['id', 'nombre']);
+            return response()->json(['estados' => $estados]);
+        }
+
+        // Si viene estado_id, devolvemos municipios
+        if ($request->has('estado_id') && !$request->has('municipio_id')) {
+            $municipios = \App\Models\Estado::findOrFail($request->estado_id)->municipios()->get(['id', 'nombre']);
+            return response()->json(['municipios' => $municipios]);
+        }
+
+        // Si viene municipio_id, devolvemos colonias o manzanas
+        if ($request->has('municipio_id') && !$request->has('colonia_id')) {
+            $colonias = \App\Models\Municipio::findOrFail($request->municipio_id)->colonias()->get(['id', 'nombre']);
+            return response()->json(['colonias' => $colonias]);
+        }
+
+        return response()->json(['message' => 'Sin filtros válidos.']);
+    }
+public function getById(Request $request, string $table, $id)
+{
+    $query = DB::table($table)->where('id', $id);
+
+    $columns = array_filter(
+        DB::getSchemaBuilder()->getColumnListing($table),
+        fn($col) => $col !== 'geom'
+    );
+
+    if ($request->boolean('with_geom', true)) {
+        $columns[] = DB::raw('ST_AsGeoJSON(geom)::json AS geom');
+    }
+
+    $query->select($columns);
+
+    $row = $query->first();
+
+    if (!$row) {
+        return response()->json(['error' => 'Registro no encontrado'], 404);
+    }
+
+    $geometry = null;
+    $props = (array) $row;
+
+    if ($request->boolean('with_geom', true) && isset($props['geom'])) {
+        $geometry = $props['geom'];
+        unset($props['geom']);
+    }
+
+    return response()->json([
+        'type' => 'Feature',
+        'geometry' => $geometry,
+        'properties' => $props,
+    ]);
+}
+
 }
