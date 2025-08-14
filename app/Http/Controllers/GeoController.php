@@ -38,8 +38,9 @@ class GeoController extends Controller
             fn($col) => $col !== 'geom'
         );
 
-        // Incluir columna geom si se solicita
-        if ($request->boolean('with_geom', true)) {
+        
+        // Incluir columna geom si se solicita y si existe en la tabla
+        if ($request->boolean('with_geom', true) && in_array('geom', DB::getSchemaBuilder()->getColumnListing($table))) {
             $columns[] = DB::raw('ST_AsGeoJSON(geom)::json AS geom');
         }
 
