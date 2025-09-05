@@ -90,6 +90,21 @@ class GeoController extends Controller
     public function getCodPostal(Request $request)    { return $this->getFromTable($request, 'cod_postal'); }
     public function getPredios(Request $request)      { return $this->getFromTable($request, 'predios'); } // AGREGADO
 
+    public function getColoniasLight(Request $request)
+    {
+        $query = \App\Models\Colonia::query();
+
+        // Filtrar por nombre si se proporciona
+        if ($request->has('nombre')) {
+            $query->where('nombre', 'like', '%' . $request->get('nombre') . '%');
+        }
+
+        // Paginación
+        $perPage = (int) $request->get('per_page', 10); // Valor por defecto más pequeño
+        $colonias = $query->paginate($perPage);
+
+        return response()->json($colonias);
+    }
 
        public function filtrosJerarquicos(Request $request)
     {
