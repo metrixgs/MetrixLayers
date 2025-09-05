@@ -20,7 +20,7 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
-        'http://localhost:5173','https://geoserver.soymetrix.com' ,'https://www.soymetrix.com','https://mapsmetrix.soymetrix.com','https://metrix-mps9.onrender.com','https://demometrix.soymetrix.com','http://127.0.0.1:8000','http://127.0.0.1:8000/','http://127.0.0.1:8000/mapa','http://localhost:8080','http://localhost','https://tan-gull-153177.hostingersite.com/'
+        'http://localhost:5173','https://geoserver.soymetrix.com' ,'https://www.soymetrix.com','https://mapsmetrix.soymetrix.com','https://metrix-mps9.onrender.com','https://demometrix.soymetrix.com','http://127.0.0.1:8000','http://127.0.0.1:8000/','http://127.0.0.1:8000/mapa','http://localhost:8080','http://localhost','https://tan-gull-153177.hostingersite.com','https://soymetrix.com'
     ],
 
     'allowed_origins_patterns' => [],
