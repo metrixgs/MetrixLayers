@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Colonia;
 
 class GeoController extends Controller
 {
@@ -99,8 +100,8 @@ class GeoController extends Controller
             $query->where('nombre', 'like', '%' . $request->get('nombre') . '%');
         }
 
-        // Paginación
-        $perPage = (int) $request->get('per_page', 10); // Valor por defecto más pequeño
+        
+        $perPage = (int) $request->get('per_page', 100);
         $colonias = $query->paginate($perPage);
 
         return response()->json($colonias);
