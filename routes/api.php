@@ -25,3 +25,4 @@ Route::get('/colonias-light', [GeoController::class, 'getColoniasLight']);
 Route::get('/cod_postal', [GeoController::class, 'getCodPostal']);
 Route::get('/predios', [GeoController::class, 'getPredios']);
 Route::get('/geo/{table}/{id}', [GeoController::class, 'getById']);
+Route::get('/filtros-jerarquicos', [GeoController::class, 'filtrosJerarquicos']);
