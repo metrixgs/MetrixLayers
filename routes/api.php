@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GeoController;
 use App\Http\Controllers\DistritoFederalController;
+use App\Http\Controllers\DistritoLocalController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -30,3 +31,6 @@ Route::get('/filtros-jerarquicos', [GeoController::class, 'filtrosJerarquicos'])
 
 Route::get('/distritos-federales', [DistritoFederalController::class, 'index']);
 Route::get('/distritos-federales/{gid}', [DistritoFederalController::class, 'show']);
+
+Route::get('/distritos-locales', [DistritoLocalController::class, 'index']);
+Route::get('/distritos-locales/{gid}', [DistritoLocalController::class, 'show']);
