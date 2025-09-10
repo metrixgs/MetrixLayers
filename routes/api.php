@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GeoController;
 use App\Http\Controllers\DistritoFederalController;
 use App\Http\Controllers\DistritoLocalController;
+use App\Http\Controllers\SeccionElectoralController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -34,3 +35,6 @@ Route::get('/distritos-federales/{gid}', [DistritoFederalController::class, 'sho
 
 Route::get('/distritos-locales', [DistritoLocalController::class, 'index']);
 Route::get('/distritos-locales/{gid}', [DistritoLocalController::class, 'show']);
+
+Route::get('/secciones-electorales', [SeccionElectoralController::class, 'index']);
+Route::get('/secciones-electorales/{gid}', [SeccionElectoralController::class, 'show']);

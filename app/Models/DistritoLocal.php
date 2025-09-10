@@ -37,6 +37,6 @@ class DistritoLocal extends Model
         'cve_dl' => 'float',
         'cve_df' => 'float',
         'tipo' => 'float',
-        'geom' => 'string', // Asumiendo que geom se manejará como texto (WKT o GeoJSON)
+        'geom' => 'string', 
     ];
 }
