@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Trigger;
+use App\Models\DistritoFederal;
 use Illuminate\Http\Request;
 
-class TriggerController extends Controller
+class DistritoFederalController extends Controller
 {
     public function index()
     {
-        $data = Trigger::all();
+        $data = DistritoFederal::all();
         return response()->json($data);
     }
 
     public function show($gid)
     {
-        $data = Trigger::find($gid);
+        $data = DistritoFederal::find($gid);
         if (!$data) {
             return response()->json(['message' => 'Registro no encontrado'], 404);
         }

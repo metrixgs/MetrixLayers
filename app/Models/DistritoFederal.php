@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Trigger extends Model
+class DistritoFederal extends Model
 {
     use HasFactory;
 
     protected $connection = 'pgsql_trigger'; // Usar la nueva conexión
-    protected $table = 'trigger'; // Nombre de la tabla
+    protected $table = 'distrito_federal'; // Nombre de la tabla
     protected $primaryKey = 'gid'; // Clave primaria
     public $incrementing = true; // La clave primaria es auto-incremental
     public $timestamps = false; // No usar timestamps created_at y updated_at

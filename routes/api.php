@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GeoController;
-use App\Http\Controllers\TriggerController;
+use App\Http\Controllers\DistritoFederalController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -28,5 +28,5 @@ Route::get('/predios', [GeoController::class, 'getPredios']);
 Route::get('/geo/{table}/{id}', [GeoController::class, 'getById']);
 Route::get('/filtros-jerarquicos', [GeoController::class, 'filtrosJerarquicos']);
 
-Route::get('/distritos-federales', [TriggerController::class, 'index']);
-Route::get('/distritos-federales/{gid}', [TriggerController::class, 'show']);
+Route::get('/distritos-federales', [DistritoFederalController::class, 'index']);
+Route::get('/distritos-federales/{gid}', [DistritoFederalController::class, 'show']);
